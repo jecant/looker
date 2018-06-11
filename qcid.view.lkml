@@ -94,12 +94,14 @@ view: qcid {
     sql: ${TABLE}.Weekday ;;
   }
 
+  # plain and stupid count - no business logic
   measure: count {
     type: count
     approximate_threshold: 100000
     drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
+  # count per unique session, e.g. only count 3 foot images as a single foot exam
   measure: count_unique_per_session {
     type: count_distinct
     sql:  ${session_uid} ;;
@@ -107,6 +109,7 @@ view: qcid {
     drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
+  # count per unique image, e.g. if user presses "rotate image" several times for a single image, only count 1
   measure: count_unique_per_image {
     type: count_distinct
     sql:  ${sopuid} ;;
