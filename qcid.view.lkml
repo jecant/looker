@@ -6,6 +6,23 @@ view: qcid {
     sql: ${TABLE}.Action ;;
   }
 
+  dimension: grouped_action {
+    type: string
+    sql:CASE
+      WHEN ${action} like 'Reject Reason%' THEN 'Reject Reason'
+      ELSE ${action}
+    END;;
+
+    link: {
+      label: "{{value}} Drill Down Dashboard"
+      url: "/dashboards/3?Reason={{ value | encode_uri }}"
+      icon_url: "http://www.looker.com/favicon.ico"
+    }
+
+  }
+
+
+
   dimension: exam_group_name {
     type: string
     sql: ${TABLE}.ExamGroupName ;;
@@ -78,6 +95,14 @@ view: qcid {
   measure: count {
     type: count
     approximate_threshold: 100000
-    drill_fields: [institution_name, exam_group_name, exposure_type_name]
+    drill_fields: [institution_name, exam_group_name_enclustered, solution]
   }
+
+  measure: count_unique_per_session {
+    type: count_distinct
+    sql:  ${session_uid} ;;
+    approximate_threshold: 100000
+    drill_fields: [institution_name, exam_group_name_enclustered, solution]
+  }
+
 }
