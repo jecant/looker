@@ -9,7 +9,9 @@ view: qcid {
   dimension: grouped_action {
     type: string
     sql:CASE
-      WHEN ${action} like 'Reject Reason%' THEN 'Reject Reason'
+      WHEN ${action} like '%Marker' THEN 'Add Marker'
+      WHEN ${action} like 'Annotation%' THEN 'Add Annotation'
+      WHEN ${action} like 'Rotate Image%' THEN 'Rotate Image'
       ELSE ${action}
     END;;
 
@@ -95,14 +97,21 @@ view: qcid {
   measure: count {
     type: count
     approximate_threshold: 100000
-    drill_fields: [institution_name, exam_group_name_enclustered, solution]
+    drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
   measure: count_unique_per_session {
     type: count_distinct
     sql:  ${session_uid} ;;
     approximate_threshold: 100000
-    drill_fields: [institution_name, exam_group_name_enclustered, solution]
+    drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
+  }
+
+  measure: count_unique_per_image {
+    type: count_distinct
+    sql:  ${sopuid} ;;
+    approximate_threshold: 100000
+    drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
 }
