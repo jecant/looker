@@ -12,6 +12,11 @@ datagroup: default_datagroup {
 
 explore: demo_qcid {}
 
-explore: qcid {}
+explore: qcid {
+  join: qcid_exam_times {
+    sql_on: ${qcid.session_uid} = ${qcid_exam_times.session_uid} ;;
+    relationship: many_to_one
+  }
+}
 
 explore: qcid_utilization {}
