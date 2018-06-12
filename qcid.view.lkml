@@ -65,7 +65,8 @@ view: qcid {
       week,
       month,
       quarter,
-      year
+      year,
+      time_of_day
     ]
     sql: ${TABLE}.Timestamp ;;
   }
@@ -77,7 +78,6 @@ view: qcid {
 
   measure: count {
     type: count
-    approximate_threshold: 100000
     drill_fields: [institution_name, exam_group_name, exposure_type_name]
   }
 }

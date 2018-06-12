@@ -44,10 +44,4 @@ view: demo_qcid {
     ]
     sql: ${TABLE}.Timestamp ;;
   }
-
-  measure: count {
-    type: count
-    approximate_threshold: 100000
-    drill_fields: [exam_group_name, exposure_type_name]
-  }
 }
