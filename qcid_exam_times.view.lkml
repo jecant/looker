@@ -3,10 +3,10 @@ view: qcid_exam_times {
     sql:
        SELECT SessionUID
         ,STRING_AGG(distinct ExamGroupNameENClustered ORDER BY ExamGroupNameENClustered) AS ExamGroupNameENClusteredList
-        ,MIN(CASE WHEN Action='Switch To Open Session' THEN timestamp ELSE NULL END) AS session_start
-        ,MAX(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END) AS session_end
-        ,TIMESTAMP_DIFF(MAX(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END)
-          ,MIN(CASE WHEN Action='Switch To Open Session' THEN timestamp ELSE NULL END)
+        ,MIN(timestamp) AS session_start
+        ,MIN(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END) AS session_end
+        ,TIMESTAMP_DIFF(MIN(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END)
+          ,MIN(timestamp)
           ,SECOND) as session_length_seconds
       FROM ${qcid.SQL_TABLE_NAME}
       GROUP BY SessionUID;;
@@ -37,7 +37,7 @@ view: qcid_exam_times {
   dimension: session_length {
     type: number
     description: "in seconds"
-    sql: ${TABLE}.session_length_seconds ;;
+    sql: ${TABLE}.session_length_seconds/60.0 ;;
   }
 
   set: detail {
@@ -76,6 +76,14 @@ view: qcid_exam_times {
     group_label: "Percentiles"
     type: percentile
     percentile: 75
+    sql: ${session_length} ;;
+    drill_fields: [detail*]
+  }
+
+  measure: session_length_95_percentile {
+    group_label: "Percentiles"
+    type: percentile
+    percentile: 95
     sql: ${session_length} ;;
     drill_fields: [detail*]
   }
