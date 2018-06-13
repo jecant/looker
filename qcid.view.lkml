@@ -84,7 +84,8 @@ view: qcid {
       week,
       month,
       quarter,
-      year
+      year,
+      time_of_day
     ]
     sql: ${TABLE}.Timestamp ;;
   }
@@ -97,7 +98,6 @@ view: qcid {
   # plain and stupid count - no business logic
   measure: count {
     type: count
-    approximate_threshold: 100000
     drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
@@ -105,7 +105,6 @@ view: qcid {
   measure: count_unique_per_session {
     type: count_distinct
     sql:  ${session_uid} ;;
-    approximate_threshold: 100000
     drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 
@@ -113,7 +112,6 @@ view: qcid {
   measure: count_unique_per_image {
     type: count_distinct
     sql:  ${sopuid} ;;
-    approximate_threshold: 100000
     drill_fields: [solution, institution_name, exam_group_name_enclustered, exposure_type_name_en]
   }
 

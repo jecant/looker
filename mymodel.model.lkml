@@ -6,16 +6,17 @@ include: "*.view"
 # include all the dashboards
 include: "*.dashboard"
 
-datagroup: mymodel_default_datagroup {
-  # sql_trigger: SELECT MAX(id) FROM etl_log;;
-  max_cache_age: "1 hour"
+datagroup: default_datagroup {
+  sql_trigger: SELECT MAX(timestamp) FROM logfiles.QCID;;
 }
-
-persist_with: mymodel_default_datagroup
-
-# NOTE: please see https://looker.com/docs/r/sql/bigquery?version=5.14
-# NOTE: for BigQuery specific considerations
 
 explore: demo_qcid {}
 
-explore: qcid {}
+explore: qcid {
+  join: qcid_exam_times {
+    sql_on: ${qcid.session_uid} = ${qcid_exam_times.session_uid} ;;
+    relationship: many_to_one
+  }
+}
+
+explore: qcid_utilization {}
