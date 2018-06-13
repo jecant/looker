@@ -3,8 +3,8 @@ view: qcid_sessions {
     sql:
       SELECT SessionUID
         ,ExamGroupName,ExposureTypeName,InstitutionName,Solution,ExamGroupNameEN,ExposureTypeNameEN,ExamGroupNameENClustered
-        ,MIN(CASE WHEN Action='Switch To Open Session' THEN timestamp ELSE NULL END) AS session_start
-        ,MAX(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END) AS session_end
+        ,MIN(timestamp) AS session_start
+        ,MIN(CASE WHEN Action='Close And Send All' THEN timestamp ELSE NULL END) AS session_end
       FROM ${qcid.SQL_TABLE_NAME}
       GROUP BY SessionUID
         ,ExamGroupName,ExposureTypeName,InstitutionName,Solution,ExamGroupNameEN,ExposureTypeNameEN,ExamGroupNameENClustered;;
@@ -29,6 +29,8 @@ view: qcid_utilization_base {
           when FORMAT_TIMESTAMP('%H:%M',qs.session_start) >=tod.time_of_day_string AND FORMAT_TIMESTAMP('%H:%M',qs.session_start) < FORMAT_TIMESTAMP('%H:%M',TIMESTAMP_ADD(tod.time_of_day_ts, INTERVAL 5 minute))
             THEN CAST(qs.session_start as date)
           when FORMAT_TIMESTAMP('%H:%M',qs.session_end) >=tod.time_of_day_string AND FORMAT_TIMESTAMP('%H:%M',qs.session_end) < FORMAT_TIMESTAMP('%H:%M',TIMESTAMP_ADD(tod.time_of_day_ts, INTERVAL 5 minute))
+            THEN CAST(qs.session_start as date)
+          when FORMAT_TIMESTAMP('%H:%M',qs.session_start) < tod.time_of_day_string AND FORMAT_TIMESTAMP('%H:%M',qs.session_end) >= FORMAT_TIMESTAMP('%H:%M',TIMESTAMP_ADD(tod.time_of_day_ts, INTERVAL 5 minute))
             THEN CAST(qs.session_start as date)
           ELSE NULL END) as number_of_utilised_days
         ,COUNT(distinct CAST(qs.session_start as date)) as number_of_days

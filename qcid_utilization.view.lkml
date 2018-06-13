@@ -91,6 +91,7 @@ view: qcid_utilization {
   measure: utilization {
     type: number
     sql: ${total_utilised_days}/NULLIF(${total_days},0) ;;
+    value_format_name: percent_1
     drill_fields: [detail*]
   }
 }
